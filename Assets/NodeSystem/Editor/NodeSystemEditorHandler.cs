@@ -1,11 +1,5 @@
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using UnityEditor;
-using UnityEditor.Callbacks;
-using UnityEditor.Compilation;
-using UnityEditor.Experimental;
 using UnityEngine;
 
 namespace DartsGames.NodeSystem
@@ -14,12 +8,21 @@ namespace DartsGames.NodeSystem
     {
         public static string NodeDir = "";
 
-        [MenuItem("DartsGames/Create/Node Editor Class")]
-        public static void CreateNodeEditorClass()
+        [MenuItem("DartsGames/Create/Node  Class")]
+        public static void CreateNodeClass()
         {
-            var className = "NodeEditors";
+            var className = "NodeDerived";
             var path = Path.Combine(NodeDir, "Scripts", "ScriptableObjects");
-            CreateClass(className, "NodeEditorBase", path, new[] {"DartsGames.NodeSystem", "UnityEngine"},
+            CreateClass(className, "NodeBase", path, new [] {"DartsGames.NodeSystem"});
+            AssetDatabase.Refresh();
+        }
+        
+        [MenuItem("DartsGames/Create/Node Graph Class")]
+        public static void CreateNodeGraphClass()
+        {
+            var className = "NodeGraphDerived";
+            var path = Path.Combine(NodeDir, "Scripts", "ScriptableObjects");
+            CreateClass(className, "NodeGraphBase", path, new[] {"DartsGames.NodeSystem", "UnityEngine"},
                 new[]
                 {
                     "CreateAssetMenu(fileName = \"new " + className + "\", menuName =\"NodeSystem/" + className +
@@ -30,7 +33,7 @@ namespace DartsGames.NodeSystem
             path = Path.Combine(NodeDir, "Scripts", "Editor", "ScriptableObjects");
             CreateClass(className + "Editor", "Editor", path, new[] {"UnityEditor", "UnityEngine"},
                 new[] {"CustomEditor(typeof(" + className + "))"}, contents:
-                @"private " + className + " " + className + @";
+                @"  private " + className + " " + className + @";
     private void Awake()
     {
         " + className + @" = target as " + className + @";
@@ -46,26 +49,21 @@ namespace DartsGames.NodeSystem
 
             path = Path.Combine(NodeDir, "Scripts", "Editor", "Windows");
 
-            CreateClass(className + "EditorWindow", "EditorWindow", path, new[] {"UnityEditor","UnityEngine"},
-                contents: @"private "+className+@" "+className+@";
-    private Vector2 scrollPos;
-    private Rect scrollSize;
-
-    public static void Init("+className+@" "+className+@")
+            CreateClass(className + "EditorWindow", "NodeGraphEditorWindowBase", path,
+                new[] {"System.Collections.Generic", "UnityEngine", "DartsGames.NodeSystem"},
+                contents: @"    private " + className + @" " + className + @";
+    public static void Init(" + className + @" " + className + @")
     {
-        var window = new "+className+@"EditorWindow();
+        var window = CreateInstance<" + className + @"EditorWindow>();
         window.scrollSize = new Rect(0, 0, 1000, 1000);
         window.scrollPos = new Vector2();
-        window."+className+@" = "+className+@";
+        window." + className + @" = " + className + @";
         window.Show();
-    }
-
-    private void OnGUI()
-    {
-        GUILayout.BeginArea(new Rect(0, 0, position.width, position.height));
-        scrollPos = GUI.BeginScrollView(new Rect(0, 0, position.width, position.height), scrollPos, scrollSize);
-        GUI.EndScrollView();
-        GUILayout.EndArea();
+        window.nodes = new List<NodeWindow>();
+        for (int i = 0; i < 1; i++)
+        {
+            window.nodes.Add(NodeWindow.Init(CreateInstance<NodeBase>(), new Rect(100, 100, 200, 200)));
+        }
     }");
             AssetDatabase.Refresh();
         }
