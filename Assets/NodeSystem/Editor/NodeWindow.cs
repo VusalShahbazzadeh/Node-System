@@ -15,6 +15,41 @@ public class NodeWindow : ScriptableObject
     public bool draggingDown;
     public bool canDrag;
 
+    public NodeWindow nextNode
+    {
+        get => _nextNode;
+        set
+        {
+            if (value is null)
+            {
+                node.nextId = 0;
+                _nextNode = null;
+                return;
+            }
+            node.nextId = value.node.Id;
+            _nextNode = value;
+        }
+    }
+
+    public NodeWindow prevNode
+    {
+        get => _prevNode;
+        set
+        {
+            if (value is null)
+            {
+                _prevNode = null;
+                node.prevId = 0;
+                return;
+            }
+            _prevNode = value;
+            node.prevId = value.node.Id;
+        }
+    }
+
+    private NodeWindow _nextNode;
+    private NodeWindow _prevNode;
+
     public static NodeWindow Init(NodeBase node, Rect position)
     {
         var window = CreateInstance<NodeWindow>();

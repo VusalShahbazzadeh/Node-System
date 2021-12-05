@@ -58,12 +58,9 @@ namespace DartsGames.NodeSystem
         window.scrollSize = new Rect(0, 0, 1000, 1000);
         window.scrollPos = new Vector2();
         window." + className + @" = " + className + @";
+        window.NodeGraphBase = " + className + @";
+        window.Init();
         window.Show();
-        window.nodes = new List<NodeWindow>();
-        for (int i = 0; i < 1; i++)
-        {
-            window.nodes.Add(NodeWindow.Init(CreateInstance<NodeBase>(), new Rect(100, 100, 200, 200)));
-        }
     }");
             AssetDatabase.Refresh();
         }

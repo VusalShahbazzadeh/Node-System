@@ -1,6 +1,12 @@
 using UnityEngine;
 
+[System.Serializable]
 public class NodeBase : ScriptableObject
 {
-    public NodeBase nextNode { get; set; }
+    [HideInInspector]
+    public int Id;
+    [HideInInspector]
+    public int nextId;
+    [HideInInspector]
+    public int prevId;
 }
